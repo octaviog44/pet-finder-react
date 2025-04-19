@@ -1,5 +1,7 @@
+
 import React, { useState } from "react";
-import Reportar from "./Reportar"; // Importar el nuevo componente
+import { useNavigate } from "react-router-dom";
+import Reportar from "./Reportar.jsx"; // Importar el nuevo componente
 
 const mascotasData = [
   {
