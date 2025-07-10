@@ -18,6 +18,7 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userEmail, setUserEmail] = useState("");
   const [showMisDatos, setShowMisDatos] = useState(false);
+  const [mascotasReportadas, setMascotasReportadas] = useState([]);
   const navigate = useNavigate();
 
   const toggleMenu = () => {
@@ -40,10 +41,19 @@ function App() {
     setShowLogin(false);
   };
 
+  const handleRegisterSuccess = () => {
+    setShowRegister(false);
+    setShowLogin(true);
+  };
+
   const handleLogout = () => {
     setIsLoggedIn(false);
     setUserEmail("");
     toggleMenu();
+  };
+
+  const handleReportarMascota = (mascota) => {
+    setMascotasReportadas((prev) => [...prev, mascota]);
   };
 
   return (
@@ -192,8 +202,19 @@ function App() {
             />
           }
         />
-        <Route path="/reportar-mascota" element={<ReportarMascota />} />
-        <Route path="/mascotas-reportadas" element={<MascotasReportadas />} />
+        <Route
+          path="/reportar-mascota"
+          element={
+            <ReportarMascota
+              onReportar={handleReportarMascota}
+              userEmail={userEmail}
+            />
+          }
+        />
+        <Route
+          path="/mascotas-reportadas"
+          element={<MascotasReportadas userEmail={userEmail} />}
+        />
         <Route path="/como-funciona" element={<ComoFunciona />} />
         <Route
           path="/"
@@ -204,14 +225,14 @@ function App() {
                 onLoginSuccess={handleLoginSuccess}
               />
             ) : showRegister ? (
-              <Register />
+              <Register onRegisterSuccess={handleRegisterSuccess} />
             ) : showMisDatos ? (
               <MisDatos
                 email={userEmail}
                 onClose={() => setShowMisDatos(false)}
               />
             ) : isLoggedIn ? (
-              <Mascotas />
+              <Mascotas mascotasReportadas={mascotasReportadas} />
             ) : (
               <>
                 {/* Imagen y contenido */}

@@ -1,39 +1,37 @@
 
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Reportar from "./Reportar.jsx"; // Importar el nuevo componente
-
-const mascotasData = [
-  {
-    id: 1,
-    nombre: "Bobby",
-    ubicacion: "Nuñez, Buenos Aires",
-    imagen: "/path/to/bobby.jpg",
-  },
-  {
-    id: 2,
-    nombre: "Robert",
-    ubicacion: "Nuñez, Buenos Aires",
-    imagen: "/path/to/robert.jpg",
-  },
-  // Agrega más mascotas según sea necesario
-];
+import React, { useState, useEffect } from "react";
+import { obtenerMascotas } from "./api/mascotas";
+import Reportar from "./Reportar.jsx";
 
 function Mascotas() {
-  const [reportarMascota, setReportarMascota] = useState(null); // Estado para manejar la mascota a reportar
+  const [reportarMascota, setReportarMascota] = useState(null);
+  const [mascotas, setMascotas] = useState([]);
+
+  useEffect(() => {
+    // Obtener mascotas del backend
+    const fetchMascotas = async () => {
+      try {
+        const data = await obtenerMascotas();
+        setMascotas(data);
+      } catch (error) {
+        console.error("Error al obtener mascotas:", error);
+      }
+    };
+    fetchMascotas();
+  }, []);
 
   const handleReportarClick = (nombre) => {
-    setReportarMascota(nombre); // Establecer la mascota a reportar
+    setReportarMascota(nombre);
   };
 
   const handleCloseReportar = () => {
-    setReportarMascota(null); // Cerrar el formulario de reporte
+    setReportarMascota(null);
   };
 
   return (
     <div style={{ padding: "20px", position: "relative" }}>
       <h2>Mascotas perdidas cerca</h2>
-      {mascotasData.map((mascota) => (
+      {mascotas.map((mascota) => (
         <div
           key={mascota.id}
           style={{
@@ -44,14 +42,14 @@ function Mascotas() {
           }}
         >
           <img
-            src={mascota.imagen}
+            src={mascota.foto || "/vacio.png"}
             alt={mascota.nombre}
-            style={{ width: "100%", height: "auto", borderRadius: "5px" }}
+            style={{ width: "120px", height: "120px", objectFit: "cover", borderRadius: "5px" }}
           />
           <h3>{mascota.nombre}</h3>
           <p>{mascota.ubicacion}</p>
           <button
-            onClick={() => handleReportarClick(mascota.nombre)} // Llamar a la función al hacer clic
+            onClick={() => handleReportarClick(mascota.nombre)}
             style={{
               backgroundColor: "red",
               color: "white",
@@ -64,11 +62,24 @@ function Mascotas() {
           </button>
         </div>
       ))}
-      {reportarMascota && ( // Mostrar el formulario si hay una mascota a reportar
-        <Reportar
-          nombreMascota={reportarMascota}
-          onClose={handleCloseReportar}
-        />
+      {reportarMascota && (
+        <div style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+          background: "rgba(0,0,0,0.4)",
+          zIndex: 2000,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
+        }}>
+          <Reportar
+            nombreMascota={reportarMascota}
+            onClose={handleCloseReportar}
+          />
+        </div>
       )}
     </div>
   );

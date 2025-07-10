@@ -1,14 +1,33 @@
 import React, { useState } from "react";
+import axios from "axios";
 
-function Register() {
+function Register({ onRegisterSuccess }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Aquí puedes agregar la lógica para manejar el registro
-    console.log("Registro:", { email, password, confirmPassword });
+    setError("");
+    setSuccess("");
+    if (password !== confirmPassword) {
+      setError("Las contraseñas no coinciden");
+      return;
+    }
+    try {
+      await axios.post("http://localhost:3000/api/auth/register", {
+        email,
+        password,
+      });
+      setSuccess("¡Registro exitoso! Ahora puedes iniciar sesión.");
+      if (onRegisterSuccess) onRegisterSuccess();
+    } catch (err) {
+      setError(
+        err.response?.data?.error || "Error al registrar usuario"
+      );
+    }
   };
 
   return (
@@ -69,6 +88,8 @@ function Register() {
           Registrarse
         </button>
       </form>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      {success && <p style={{ color: "green" }}>{success}</p>}
     </div>
   );
 }

@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { reportarMascota } from "../api/mascotas";
 import {
   MapContainer,
   TileLayer,
@@ -18,15 +20,30 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
 });
 
-const ReportarMascota = () => {
+const ReportarMascota = ({ onReportar, userEmail }) => {
   const [nombre, setNombre] = useState("");
   const [ubicacion, setUbicacion] = useState("");
   const [foto, setFoto] = useState(null);
   const [position, setPosition] = useState([-34.61, -58.38]); // Buenos Aires por defecto
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Mascota reportada:", { nombre, ubicacion, foto, position });
+    console.log("userEmail:", userEmail); // Depuración
+    if (!userEmail) {
+      alert("Debes iniciar sesión para reportar una mascota.");
+      return;
+    }
+    const mascota = {
+      nombre,
+      ubicacion,
+      foto,
+      position,
+      user_email: userEmail,
+    };
+    await reportarMascota(mascota);
+    if (onReportar) onReportar(mascota);
+    navigate("/mascotas-reportadas");
   };
 
   const handleFileChange = (e) => {
