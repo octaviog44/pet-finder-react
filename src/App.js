@@ -126,6 +126,16 @@ function App() {
           <ul style={{ listStyleType: "none", padding: 0 }}>
             <li
               onClick={() => {
+                toggleMenu();
+              }}
+              style={{ margin: "10px 0", cursor: "pointer" }}
+            >
+              <Link to="/" style={{ color: "white", textDecoration: "none" }}>
+                Ver Mascotas perdidas
+              </Link>
+            </li>
+            <li
+              onClick={() => {
                 setShowMisDatos(true);
                 toggleMenu();
               }}
